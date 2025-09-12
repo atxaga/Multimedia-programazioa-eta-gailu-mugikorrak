@@ -40,6 +40,7 @@
 
 
             <RadioButton
+                android:id="@+id/radioMale"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
@@ -55,6 +56,7 @@
                 />
 
             <RadioButton
+                android:id="@+id/radioFemale"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:ignore="MissingConstraints"
@@ -109,24 +111,37 @@
                 tools:ignore="MissingConstraints" />
         </LinearLayout>
         <EditText
-            android:id="@+id/heiht"
+            android:id="@+id/Wheight"
             android:layout_width="70dp"
             android:layout_height="43dp"
             android:ems="10"
             android:inputType="number"
-            android:hint="Height(kg)"
+            android:hint="Wheight(kg)"
             android:textAlignment="4"
             android:textSize="14sp"
             tools:layout_editor_absoluteX="213dp"
             tools:layout_editor_absoluteY="254dp"
             tools:ignore="MissingConstraints" />
         <Button
+            android:id="@+id/buttonCalculate"
             android:layout_width="139dp"
             android:layout_height="35dp"
             android:text="Calcular"
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteX="136dp"
             tools:layout_editor_absoluteY="316dp" />
+
+        <TextView
+            android:id="@+id/resultTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Resultado: "
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            />
+
 
     </LinearLayout>
 
