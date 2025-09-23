@@ -10,12 +10,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class StartersActivity extends AppCompatActivity {
+public class DesertsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_starters);
+        setContentView(R.layout.activity_deserts);
 
         ListView lista = findViewById(R.id.startesList);
         Plato[] platos = {

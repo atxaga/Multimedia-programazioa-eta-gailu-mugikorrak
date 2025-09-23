@@ -4,17 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
     CardView startersCard;
     CardView mainCard;
+
+    CardView desertCard;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
         startersCard = findViewById(R.id.card_view_starters);
         mainCard = findViewById(R.id.card_view_mains);
+        desertCard = findViewById(R.id.card_view_deserts);
 
         startersCard.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -31,6 +30,27 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(startersActivityIntent);
             }
         });
+
+        mainCard.setOnClickListener(v -> onClickMain());
+        desertCard.setOnClickListener(v -> onClickDesert());
+
+
+
+
+
+    }
+
+    public void onClickMain() {
+        Intent mainCourseActivityIntent = new Intent(MainActivity.this, MainCourseActivity.class);
+
+        startActivity(mainCourseActivityIntent);
+
+    }
+
+    public void onClickDesert() {
+        Intent mainCourseActivityIntent = new Intent(MainActivity.this, DesertsActivity.class);
+
+        startActivity(mainCourseActivityIntent);
 
     }
 }

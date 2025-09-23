@@ -4,20 +4,16 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-public class StartersActivity extends AppCompatActivity {
+public class MainCourseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_starters);
+        setContentView(R.layout.activity_main_course);
 
-        ListView lista = findViewById(R.id.startesList);
+        ListView lista = findViewById(R.id.mainCourseList);
         Plato[] platos = {
                 new Plato("Melon and sesame salad","Melon and sesame salad",10),
                 new Plato("Veal and potato stew","Veal and potato stew",9),
