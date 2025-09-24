@@ -48,9 +48,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickDesert() {
-        Intent mainCourseActivityIntent = new Intent(MainActivity.this, DesertsActivity.class);
+        Intent desertActivityIntent = new Intent(MainActivity.this, DesertsActivity.class);
 
-        startActivity(mainCourseActivityIntent);
+        startActivity(desertActivityIntent);
 
     }
 }

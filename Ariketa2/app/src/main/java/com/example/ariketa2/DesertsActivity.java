@@ -17,7 +17,7 @@ public class DesertsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deserts);
 
-        ListView lista = findViewById(R.id.startesList);
+        ListView lista = findViewById(R.id.desertsList);
         Plato[] platos = {
                 new Plato("Melon and sesame salad","Melon and sesame salad",10),
                 new Plato("Veal and potato stew","Veal and potato stew",9),
