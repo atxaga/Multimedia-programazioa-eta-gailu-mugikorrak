@@ -34,10 +34,6 @@ public class MainActivity extends AppCompatActivity {
         mainCard.setOnClickListener(v -> onClickMain());
         desertCard.setOnClickListener(v -> onClickDesert());
 
-
-
-
-
     }
 
     public void onClickMain() {
