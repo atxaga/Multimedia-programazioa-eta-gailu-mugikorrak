@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1071880461251",
+    "project_id": "f1wardle",
+    "storage_bucket": "f1wardle.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1071880461251:android:5a5f12ffa0eebfef89bb76",
+        "android_client_info": {
+          "package_name": "com.example.f1wardle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzYgLP4NM7-eIENG5ZG0IHUaq3H_t8uOg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
