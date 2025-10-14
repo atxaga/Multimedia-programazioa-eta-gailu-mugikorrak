@@ -9,11 +9,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.gridlayout.widget.GridLayout
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
+
+    private val db = FirebaseFirestore.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        /*val textView = findViewById<TextView>(R.id.titleText)
+        db.collection("prueba").document("1").get().addOnSuccessListener { document ->
+            if (document.exists()) {
+                textView.text = document.getString("nombre")
+            }
+        }*/
 
         val gridAttempts = findViewById<GridLayout>(R.id.gridAttempts)
         val rows = 6
