@@ -39,17 +39,19 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Campo de texto para ingresar piloto -->
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/inputPiloto"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Piloto"
+        android:hint="Gidaria"
         android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
         android:backgroundTint="@color/black"
         android:background="@android:drawable/edit_text"
         android:inputType="textPersonName"
         android:padding="12dp"
+        android:completionThreshold="1"
+        android:imeOptions="actionDone"
         app:layout_constraintTop_toBottomOf="@id/gridAttempts"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
