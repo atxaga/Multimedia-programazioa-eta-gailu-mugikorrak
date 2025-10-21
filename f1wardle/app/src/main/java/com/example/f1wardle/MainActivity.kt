@@ -16,8 +16,10 @@ import com.example.f1wardle.data.Pilot
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.compose.material3.Button
 
 class MainActivity : AppCompatActivity() {
 
@@ -62,20 +64,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 1️⃣ Inicializar el repositorio
         repository = LocalDataRepository(this)
 
-        // 2️⃣ Cargar todos los pilotos desde el JSON
         allPilots = repository.loadPilots()
 
-        // 3️⃣ Seleccionar un piloto objetivo aleatorio
         targetPilot = allPilots.random()
 
-        // 4️⃣ Inicializar vistas
         gridAttempts = findViewById(R.id.gridAttempts)
         inputPiloto = findViewById(R.id.inputPiloto)
 
-        // 5️⃣ Configurar autocompletado de nombres
+
         val names = allPilots.map { it.name }
         val adapter = android.widget.ArrayAdapter(
             this,
@@ -83,8 +81,15 @@ class MainActivity : AppCompatActivity() {
             names
         )
         (inputPiloto as android.widget.AutoCompleteTextView).setAdapter(adapter)
+        inputPiloto.apply {
+            threshold = 1
+            dropDownVerticalOffset = -height
+            dropDownHeight = 600
+        }
 
-        // 6️⃣ Configurar el grid y la lógica del input
+        findViewById<Button>(R.id.btnReiniciar).setOnClickListener { resetGame()
+        }
+
         setupGrid()
         setupInput()
     }
@@ -99,7 +104,7 @@ class MainActivity : AppCompatActivity() {
                 orientation = LinearLayout.VERTICAL
                 layoutParams = GridLayout.LayoutParams().apply {
                     width = 0
-                    height = 200  // altura fija, ajusta a tu gusto
+                    height = 200
                     columnSpec = GridLayout.spec(i % cols, 1f)
                     rowSpec = GridLayout.spec(i / cols)
                     setMargins(4, 4, 4, 4)
@@ -108,14 +113,12 @@ class MainActivity : AppCompatActivity() {
                 setBackgroundResource(R.drawable.cell_background)
             }
 
-            // ImageView para bandera/logo
             val image = ImageView(this).apply {
                 layoutParams = LinearLayout.LayoutParams(60, 60) // tamaño de imagen
                 scaleType = ImageView.ScaleType.FIT_CENTER
-                visibility = View.GONE // se muestra solo si hay imagen
+                visibility = View.GONE
             }
 
-            // TextView para el texto
             val text = TextView(this).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -139,16 +142,14 @@ class MainActivity : AppCompatActivity() {
         val autoComplete = inputPiloto as AutoCompleteTextView
         autoComplete.isSingleLine = true
         autoComplete.imeOptions = EditorInfo.IME_ACTION_DONE
-        autoComplete.threshold = 1 // mostrar sugerencias tras 1 carácter
+        autoComplete.threshold = 1
 
-        // Clic/tap en item de la lista (comportamiento nativo)
         autoComplete.setOnItemClickListener { _, _, position, _ ->
             val selectedName = autoComplete.adapter.getItem(position) as String
             handleAttempt(selectedName)
             autoComplete.text.clear()
         }
 
-        // Cuando el usuario pulsa Enter/Done: intentamos completar la sugerencia resaltada
         autoComplete.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE ||
                 actionId == EditorInfo.IME_ACTION_GO ||
@@ -159,7 +160,6 @@ class MainActivity : AppCompatActivity() {
             } else false
         }
 
-        // Tecla física Enter (emulador / algunos teclados)
         autoComplete.setOnKeyListener { _, keyCode, keyEvent ->
             if (keyEvent.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
                 handleEnterWithCompletion(autoComplete)
@@ -168,67 +168,141 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun fillRow(pilot: Pilot, rowIndex: Int) {
-        val columns = listOf(
-            pilot.flag,                              // 0: bandera
-            pilot.name.take(3).uppercase(),          // 1: nombre
-            pilot.team,                              // 2: equipo
-            pilot.number.toString(),                 // 3: número
-            pilot.age.toString(),                    // 4: edad
-            pilot.debut.toString(),                  // 5: debut
-            pilot.wins.toString()                    // 6: victorias
+    private fun fillRow(pilot: Pilot, attemptIndex: Int) {
+        val attributes = listOf(
+            pilot.name.split(" ").last().take(3).uppercase(), // 0 Apellido
+            pilot.flag,                                       // 1 Bandera
+            pilot.team,                                       // 2 Equipo
+            pilot.number.toString(),                           // 3 Número de coche
+            pilot.age.toString(),                              // 4 Edad
+            pilot.debut.toString(),                            // 5 Debut
+            pilot.wins.toString()                              // 6 Victorias
         )
 
-        for (colIndex in 0 until cols) {
-            val cellIndex = rowIndex * cols + colIndex
-            val cell = gridAttempts.getChildAt(cellIndex) as TextView
-            cell.text = columns[colIndex]
+        for (i in attributes.indices) {
+            val cellIndex = attemptIndex * cols + i
+            val cellLayout = gridAttempts.getChildAt(cellIndex) as LinearLayout
+            val cellImage = cellLayout.getChildAt(0) as ImageView
+            val cellText = cellLayout.getChildAt(1) as TextView
 
-            // Colorear como antes
-            val color = when (colIndex) {
-                0 -> colorFlag(pilot.flag, targetPilot.flag)
-                1 -> colorString(pilot.name, targetPilot.name)
-                2 -> colorTeam(pilot.team, targetPilot)
-                3 -> compareNumber(pilot.number, targetPilot.number, reversed = true)
-                4 -> compareAge(pilot.age, targetPilot.age)
-                5 -> compareNumber(pilot.debut, targetPilot.debut, reversed = true)
-                6 -> compareNumber(pilot.wins, targetPilot.wins, reversed = true)
-                else -> Color.DKGRAY
-            }
-            cell.setBackgroundColor(color)
+            val attr = attributes[i]
 
-            // 🎌 Poner la bandera solo en la primera columna
-            if (colIndex == 0) {
-                val isoCode = flagCodeMap[pilot.flag] ?: "unknown"
-                val flagResId = resources.getIdentifier(isoCode, "drawable", packageName)
-                cell.setCompoundDrawablesWithIntrinsicBounds(flagResId, 0, 0, 0)
-                cell.compoundDrawablePadding = 8
-            } else {
-                cell.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+            when (i) {
+                0 -> { // Apellido
+                    cellImage.visibility = View.GONE
+                    cellText.text = attr
+                    if (pilot.name == targetPilot.name) {
+                        cellLayout.setBackgroundColor(Color.parseColor("#00C853"))
+                    } else {
+                        cellLayout.setBackgroundResource(R.drawable.cell_background)
+                    }
+                }
+
+                1 -> {
+                    cellText.text = ""
+                    cellImage.visibility = View.VISIBLE
+                    val params = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT
+                    ).apply {
+                        setMargins(8, 8, 8, 8) // margen para que no se corte
+                    }
+                    cellImage.layoutParams = params
+                    cellImage.scaleType = ImageView.ScaleType.FIT_CENTER
+                    cellImage.setImageResource(getFlagResource(flagCodeMap[pilot.flag] ?: "us"))
+
+                    if (pilot.flag == targetPilot.flag) {
+                        cellLayout.setBackgroundColor(Color.parseColor("#00C853")) // verde
+                    } else {
+                        cellLayout.setBackgroundColor(Color.parseColor("#D50000")) // rojo
+                    }
+                }
+
+                2 -> {
+                    cellText.text = ""
+                    cellImage.visibility = View.VISIBLE
+
+                    val params = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT
+                    ).apply {
+                        setMargins(8, 8, 8, 8)
+                    }
+                    cellImage.layoutParams = params
+                    cellImage.scaleType = ImageView.ScaleType.FIT_CENTER
+
+                    val teamLogoRes = getTeamLogoResource(pilot.team)
+                    if (teamLogoRes != 0) {
+                        cellImage.setImageResource(teamLogoRes)
+                    } else {
+
+                        cellImage.visibility = View.GONE
+                        cellText.text = pilot.team
+                    }
+
+                    cellLayout.setBackgroundColor(colorTeam(pilot.team, targetPilot))
+                }
+
+                3 -> { // Número
+                    cellImage.visibility = View.GONE
+                    cellText.text = attr
+                    cellLayout.setBackgroundColor(compareNumber(attr.toInt(), targetPilot.number))
+                }
+
+                4 -> { // Edad
+                    cellImage.visibility = View.GONE
+                    cellText.text = attr
+                    cellLayout.setBackgroundColor(compareAge(attr.toInt(), targetPilot.age))
+                }
+
+                5 -> { // Debut
+                    cellImage.visibility = View.GONE
+                    cellText.text = attr
+                    cellLayout.setBackgroundColor(compareNumber(attr.toInt(), targetPilot.debut))
+                }
+
+                6 -> { // Victorias
+                    cellImage.visibility = View.GONE
+                    cellText.text = attr
+                    // verde si coincide, amarillo si < target, morado si > target
+                    cellLayout.setBackgroundColor(
+                        when {
+                            attr.toInt() == targetPilot.wins -> Color.parseColor("#00C853")
+                            attr.toInt() < targetPilot.wins -> Color.parseColor("#FFD600")
+                            else -> Color.parseColor("#8E24AA")
+                        }
+                    )
+                }
             }
         }
     }
 
-    /**
-     * Si el dropdown está abierto y hay una sugerencia resaltada, performCompletion()
-     * aplica esa sugerencia al text field. Esperamos brevemente a que se aplique y
-     * luego procesamos el texto resultante. Si no hay dropdown, procesamos el texto tal cual.
-     */
+
+
+    private fun getFlagResource(code: String): Int {
+        return resources.getIdentifier(code, "drawable", packageName)
+    }
+
+    private fun getTeamLogoResource(teamName: String): Int {
+        val resourceName = "logo_" + teamName
+            .lowercase()
+            .replace(" ", "")
+            .replace("-", "")
+        return resources.getIdentifier(resourceName, "drawable", packageName)
+    }
+
     private fun handleEnterWithCompletion(autoComplete: AutoCompleteTextView) {
         if (autoComplete.isPopupShowing) {
-            // Forzar que se aplique la sugerencia actualmente marcada (si la hay)
             autoComplete.performCompletion()
 
-            // Pequeño delay para que la UI sustituya el texto con la sugerencia seleccionada
             Handler(Looper.getMainLooper()).postDelayed({
                 val selectedText = autoComplete.text.toString().trim()
                 if (selectedText.isNotEmpty()) {
                     handleAttempt(selectedText)
                     autoComplete.text.clear()
                 }
-            }, 50) // 50 ms suele ser suficiente; puedes subir a 100 si fallara en algún dispositivo
-        } else {
-            // Si no hay dropdown abierto, usar el texto tal cual
+            }, 50)
+
             val text = autoComplete.text.toString().trim()
             if (text.isNotEmpty()) {
                 handleAttempt(text)
@@ -241,13 +315,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleAttempt(name: String) {
         if (attempt >= maxAttempts) {
-            Toast.makeText(this, "¡Ya no tienes más intentos!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Ez daukazu saiakera gehiago!", Toast.LENGTH_SHORT).show()
             return
         }
 
         val pilot = allPilots.find { it.name.equals(name, ignoreCase = true) }
         if (pilot == null) {
-            Toast.makeText(this, "Piloto no encontrado", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Gidaria ez da aurkitu", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -255,46 +329,12 @@ class MainActivity : AppCompatActivity() {
         attempt++
 
         if (pilot.name.equals(targetPilot.name, ignoreCase = true)) {
-            Toast.makeText(this, "🎉 ¡Correcto! Era ${targetPilot.name}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "🎉 Ondo! gidaria ${targetPilot.name} zen", Toast.LENGTH_LONG).show()
         } else if (attempt == maxAttempts) {
-            Toast.makeText(this, "❌ Fin. Era ${targetPilot.name}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "❌ Bukaera. gidaria ${targetPilot.name} zen", Toast.LENGTH_LONG).show()
         }
     }
 
-    private fun fillRow(pilot: Pilot, rowIndex: Int) {
-        // Asegúrate de que la lista de columnas tenga exactamente 'cols' elementos
-        val columns = listOf(
-            pilot.flag,                              // 0: bandera (string, luego puedes cambiar por imagen)
-            pilot.name.take(3).uppercase(),          // 1: nombre (3 letras)
-            pilot.team,                              // 2: equipo
-            pilot.number.toString(),                 // 3: número
-            pilot.age.toString(),                    // 4: edad
-            pilot.debut.toString(),                  // 5: debut
-            pilot.wins.toString()                    // 6: victorias
-        )
-
-        for (colIndex in 0 until cols) {
-            val cellIndex = rowIndex * cols + colIndex
-            val cell = gridAttempts.getChildAt(cellIndex) as TextView
-            cell.text = columns[colIndex]
-
-            val color = when (colIndex) {
-                0 -> colorFlag(pilot.flag, targetPilot.flag)
-                1 -> colorString(pilot.name, targetPilot.name)
-                2 -> colorTeam(pilot.team, targetPilot)
-                3 -> compareNumber(pilot.number, targetPilot.number, reversed = true)  // número de coche
-                4 -> compareAge(pilot.age, targetPilot.age)         // edad
-                5 -> compareNumber(pilot.debut, targetPilot.debut, reversed = true)   // debut funciona bien
-                6 -> compareNumber(pilot.wins, targetPilot.wins, reversed = true)      // victorias
-
-                else -> Color.DKGRAY
-            }
-
-            cell.setBackgroundColor(color)
-        }
-    }
-
-    // === Funciones de coloreado ===
     private fun colorFlag(guess: String, target: String): Int =
         if (guess.equals(target, ignoreCase = true)) Color.parseColor("#00C853") else Color.parseColor("#D50000")
 
@@ -302,32 +342,33 @@ class MainActivity : AppCompatActivity() {
         if (guess.equals(target, ignoreCase = true)) Color.parseColor("#00C853") else Color.parseColor("#D50000")
 
     private fun colorTeam(guess: String, target: Pilot): Int = when {
-        guess.equals(target.team, ignoreCase = true) -> Color.parseColor("#00C853") // verde
-        target.pastTeams.any { it.equals(guess, ignoreCase = true) } -> Color.parseColor("#FFD600") // amarillo
+        guess.equals(target.team, ignoreCase = true) -> Color.parseColor("#00C853")
+        target.pastTeams.any { it.equals(guess, ignoreCase = true) } -> Color.parseColor("#FFD600")
         else -> Color.parseColor("#D50000") // rojo
     }
-
-    /**Fer
-     * compareNumber:
-     * - si igual -> verde
-     * - si 'guess' > 'target' -> amarillo (o morado dependiendo de tu regla)
-     * - si 'guess' < 'target' -> morado
-     *
-     * Param reversed = true invierte la comparación (útil para 'debut' si un debut menor es "mejor")
-     */
-    private fun compareNumber(guess: Int, target: Int, reversed: Boolean = false): Int {
+    private fun compareNumber(guess: Int, target: Int): Int {
         return when {
-            guess == target -> Color.parseColor("#00C853") // verde
-            (!reversed && guess > target) || (reversed && guess < target) -> Color.parseColor("#FFD600") // amarillo
-            else -> Color.parseColor("#8E24AA") // morado
+            guess == target -> Color.parseColor("#00C853")
+            guess < target -> Color.parseColor("#FFD600")
+            else -> Color.parseColor("#8E24AA")
         }
     }
 
     private fun compareAge(guess: Int, target: Int): Int {
         return when {
-            guess == target -> Color.parseColor("#00C853") // verde
-            guess < target -> Color.parseColor("#FFD600")  // amarillo
-            else -> Color.parseColor("#8E24AA")           // morado
+            guess == target -> Color.parseColor("#00C853")
+            guess < target -> Color.parseColor("#FFD600")
+            else -> Color.parseColor("#8E24AA")
         }
+    }
+
+    private fun resetGame() {
+        attempt = 0
+        gridAttempts.removeAllViews()
+        setupGrid()
+
+        targetPilot = allPilots.random()
+
+        Toast.makeText(this, "🔄 Hasi da partida berria!", Toast.LENGTH_SHORT).show()
     }
 }

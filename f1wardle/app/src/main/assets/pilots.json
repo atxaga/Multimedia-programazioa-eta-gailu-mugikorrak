@@ -51,13 +51,13 @@
   },
   {
     "name": "Mark Webber",
-    "team": "Red Bull",
+    "team": "Red Bull Racing",
     "number": 1,
     "birthDate": "1976-08-27",
     "debut": 2002,
     "wins": 9,
     "flag": "flag_aus",
-    "pastTeams": ["Minardi", "Jaguar", "Red Bull", "Williams"]
+    "pastTeams": ["Minardi", "Jaguar", "Red Bull Racing", "Williams"]
   },
   {
     "name": "Sebastian Vettel",
@@ -67,7 +67,7 @@
     "debut": 2007,
     "wins": 53,
     "flag": "flag_deu",
-    "pastTeams": ["BMW Sauber", "Toro Rosso", "Red Bull", "Ferrari", "Aston Martin"]
+    "pastTeams": ["BMW Sauber", "Toro Rosso", "Red Bull Racing", "Ferrari", "Aston Martin"]
   },
   {
     "name": "Lewis Hamilton",
@@ -91,23 +91,23 @@
   },
   {
     "name": "Sergio Perez",
-    "team": "Red Bull",
+    "team": "Red Bull Racing",
     "number": 11,
     "birthDate": "1990-01-26",
     "debut": 2011,
     "wins": 6,
     "flag": "flag_mex",
-    "pastTeams": ["Sauber", "McLaren", "Force India", "Racing Point", "Red Bull"]
+    "pastTeams": ["Sauber", "McLaren", "Force India", "Racing Point", "Red Bull Racing"]
   },
   {
     "name": "Daniel Ricciardo",
-    "team": "Red Bull",
+    "team": "Racing Bulls",
     "number": 3,
     "birthDate": "1989-07-01",
     "debut": 2011,
     "wins": 8,
     "flag": "flag_aus",
-    "pastTeams": ["HRT", "Toro Rosso", "Red Bull", "Renault", "McLaren", "AlphaTauri"]
+    "pastTeams": ["HRT", "Toro Rosso", "Red Bull Racing", "Renault", "McLaren", "AlphaTauri"]
   },
   {
     "name": "Valtteri Bottas",
@@ -177,7 +177,7 @@
     "debut": 2017,
     "wins": 1,
     "flag": "flag_fra",
-    "pastTeams": ["Toro Rosso", "Red Bull", "AlphaTauri", "Alpine"]
+    "pastTeams": ["Toro Rosso", "Red Bull Racing", "AlphaTauri", "Alpine"]
   },
   {
     "name": "Charles Leclerc",
@@ -217,7 +217,7 @@
     "debut": 2019,
     "wins": 0,
     "flag": "flag_tha",
-    "pastTeams": ["Toro Rosso", "Red Bull", "Williams"]
+    "pastTeams": ["Toro Rosso", "Red Bull Racing", "Williams"]
   },
   {
     "name": "Yuki Tsunoda",
@@ -277,7 +277,7 @@
     "debut": 2024,
     "wins": 0,
     "flag": "flag_gbr",
-    "pastTeams": ["Haas"]
+    "pastTeams": ["Ferrari","Haas"]
   },
   {
     "name": "Kimi Antonelli",
